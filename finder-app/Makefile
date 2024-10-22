@@ -2,15 +2,17 @@
 CROSS_COMPILE ?=
 
 # Set Compiler based on CROSS_COMPILE flag
-ifeq ($CROSS_COMPILE,)
+ifeq ($(CROSS_COMPILE),)
 	CC = gcc
+	CFLAGS = -Wall -g
 else
 	CC = $(CROSS_COMPILE)gcc
+	CFLAGS = -Wall -g
 endif
 
 # Source files and executable name
 SRC = writer.c
-OBJ = $(SRC:.c=.o)
+OBJ = writer.o
 EXEC = writer
 
 # The default target
@@ -21,8 +23,8 @@ $(EXEC): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(EXEC)
 
 # Rule to compile source files into object files
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+writer.o: writer.c
+	$(CC) $(CFLAGS) -c writer.c
 
 # Clean up build files
 clean:
