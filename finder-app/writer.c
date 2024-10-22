@@ -26,8 +26,9 @@ int main(int argc, char* argv[])
     }
 
     // Variables
-    const char* writestr = argv[1];
-    const char* filename = argv[2];
+    const char* filename = argv[1];
+    const char* writestr = argv[2];
+
     FILE* file = fopen(filename, "w");
 
     //Check if file exist and writing string
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 
         return 1;
     } else {
-        printf("File: %s exists \n.",filename);
+        printf("File: %s exists.\n",filename);
         syslog(LOG_DEBUG, "Writing %s to %s...",writestr, filename);
         
         //Write to file and check if successfull
