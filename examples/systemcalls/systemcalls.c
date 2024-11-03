@@ -1,5 +1,11 @@
 #include "systemcalls.h"
+
+#include <fcntl.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -57,7 +63,7 @@ bool do_exec(int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+   //command[count] = command[count];
 
 /*
  * TODO:
@@ -68,9 +74,23 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+    pid_t child_pid;
+    int wait_pid;
 
+    fflush(stdout);
+    child_pid = fork();
+
+    if (child_pid == -1)
+        return false;
+    else if (child_pid == 0) {
+        if(execv(command[0], command) == -1)
+            exit(EXIT_FAILURE);   // execv failed
+    } else {
+        if (waitpid(child_pid, &wait_pid,0) == -1)
+            return false;
+        return WIFEXITED(wait_pid) && (WEXITSTATUS(wait_pid) == 0);
+    }
     va_end(args);
-
     return true;
 }
 
@@ -92,7 +112,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+    //command[count] = command[count];
 
 
 /*
@@ -102,8 +122,31 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
+    pid_t child_pid;
+    int wait_pid;
+
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if (fd < 0) { perror("open"); return false; }
+    switch (child_pid = fork()) {
+        case -1: perror("fork"); return false;
+        case 0:
+            if (dup2(fd, 1) < 0) { return false; }
+            close(fd);
+            if (execvp(command[0], command)== -1){
+                perror("execvp");
+                exit(EXIT_FAILURE);
+            }
+                
+        default:   
+            if (waitpid(child_pid, &wait_pid,0) == -1){
+                    return false;
+                }
+            close(fd);
+            return WIFEXITED(wait_pid) && (WEXITSTATUS(wait_pid) == 0);
+    }
 
     va_end(args);
-
+    close(fd);
+    
     return true;
 }
