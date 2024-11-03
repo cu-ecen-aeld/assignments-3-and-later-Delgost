@@ -1,4 +1,5 @@
 #include "systemcalls.h"
+#include <stdlib.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -16,8 +17,17 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
-
-    return true;
+    int ret;
+    ret = system(cmd);
+    
+    if (cmd == NULL)    //Check if cmd is empty
+        return false;
+    else if (ret == -1)      //Check if child process could be created
+        return false;
+    else if (ret == 127) // Check if shell could be executed within child process
+        return false;
+    else
+        return true;
 }
 
 /**
