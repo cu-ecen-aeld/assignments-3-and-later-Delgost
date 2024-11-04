@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Script find.sh for Assignment 1.
 # Features:
