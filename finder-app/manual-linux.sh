@@ -117,7 +117,7 @@ cd "$SCRIPT_DIR"
 make clean
 make CROSS_COMPILE=${CROSS_COMPILE}
 
-ech "Copy the finder related scripts and executables to the /home directory on the target rootfs..."
+echo "Copy the finder related scripts and executables to the /home directory on the target rootfs..."
 cp $(dirname "$0")/writer ${OUTDIR}/rootfs/home/
 cp $(dirname "$0")/finder.sh ${OUTDIR}/rootfs/home/
 cp -r $(dirname "$0")/conf/ ${OUTDIR}/rootfs/home/
